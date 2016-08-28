@@ -69,64 +69,14 @@ int bf_init(char *arg) {
   bf_options.crs[0] = 0;
 
   for (; tmp[i]; i++) {
-    switch (tmp[i]) {
-    case 'a':
-      crs_len += 26;
-      if (BF_CHARSMAX - crs_len < 1) {
-        free(bf_options.crs);
-        fprintf(stderr, "Error: charset specification exceeds %d characters.\n", BF_CHARSMAX);
-        return 1;
-      } else if (flags & BF_LOWER) {
-        free(bf_options.crs);
-        fprintf(stderr, "Error: 'a' specified more than once in charset!\n");
-        return 1;
-      } else {
-        strcat(bf_options.crs, "abcdefghijklmnopqrstuvwxyz");
-        flags |= BF_LOWER;
-      }
-      break;
-
-    case 'A':
-      crs_len += 26;
-      if (BF_CHARSMAX - crs_len < 1) {
-        free(bf_options.crs);
-        fprintf(stderr, "Error: charset specification exceeds %d characters.\n", BF_CHARSMAX);
-        return 1;
-      } else if (flags & BF_UPPER) {
-        free(bf_options.crs);
-        fprintf(stderr, "Error: 'A' specified more than once in charset!\n");
-        return 1;
-      } else {
-        strcat(bf_options.crs, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        flags |= BF_UPPER;
-      }
-      break;
-
-    case '1':
-      crs_len += 10;
-      if (BF_CHARSMAX - crs_len < 1) {
-        free(bf_options.crs);
-        fprintf(stderr, "Error: charset specification exceeds %d characters.\n", BF_CHARSMAX);
-        return 1;
-      } else if (flags & BF_NUMS) {
-        free(bf_options.crs);
-        fprintf(stderr, "Error: '1' specified more than once in charset!\n");
-        return 1;
-      } else {
-        strcat(bf_options.crs, "0123456789");
-        flags |= BF_NUMS;
-      }
-      break;
-
-    default:
-      if ((tmp[i] >= '2' && tmp[i] <= '9') || tmp[i] == '0') {
+      if ((tmp[i] >= '1' && tmp[i] <= '9') || tmp[i] == '0') {
         if ((flags & BF_NUMS) > 0) {
           printf("[ERROR] character %c defined in -x although the whole number range was already defined by '1', ignored\n", tmp[i]);
           continue;
         }
         printf("[WARNING] adding character %c for -x, note that '1' will add all numbers from 0-9\n", tmp[i]);
       }
-      if (tolower((int) tmp[i]) >= 'b' && tolower((int) tmp[i]) <= 'z') {
+      if (tolower((int) tmp[i]) >= 'a' && tolower((int) tmp[i]) <= 'z') {
         if ((tmp[i] <= 'Z' && (flags & BF_UPPER) > 0) || (tmp[i] > 'Z' && (flags & BF_UPPER) > 0)) {
           printf("[ERROR] character %c defined in -x although the whole letter range was already defined by '%c', ignored\n", tmp[i], tmp[i] <= 'Z' ? 'A' : 'a');
           continue;
@@ -142,8 +92,6 @@ int bf_init(char *arg) {
         bf_options.crs[crs_len - 1] = tmp[i];
         bf_options.crs[crs_len] = '\0';
       }
-      break;
-    }
   }
 
   bf_options.crs_len = crs_len;
